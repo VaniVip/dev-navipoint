@@ -144,6 +144,15 @@ a:hover {
     width: 55%;
 }
 
+/* Добавляем стили для предотвращения обрезания текста */
+.col-service-name input.editable-field {
+    white-space: normal; /* Разрешаем перенос текста */
+    overflow: visible; /* Отключаем сокрытие контента */
+    height: auto; /* Высота будет определяться содержимым */
+    min-height: 36px; /* Минимальная высота */
+    resize: vertical; /* Позволяем изменять размер по вертикали */
+}
+
 /* Стили для чекбоксов в стиле Bitrix24 */
 input[type="checkbox"] {
     position: relative;

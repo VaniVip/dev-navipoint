@@ -1,0 +1,202 @@
+/* Стили для страницы настроек */
+
+.settings-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #eef2f4;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: 2px;
+    border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+    background-color: #f6f8f9;
+}
+
+.tab.active {
+    border-bottom: 2px solid #bbed21;
+    color: #333;
+    font-weight: 500;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.settings-actions {
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-action {
+    padding: 8px 16px;
+    background-color: #fff;
+    color: #525c69;
+    border: 1px solid #c6cdd3;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-action:hover {
+    background-color: #f6f8f9;
+}
+
+.btn-save {
+    padding: 8px 16px;
+    background-color: #bbed21;
+    color: #525c69;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.btn-save:hover {
+    background-color: #d2f95f;
+}
+
+.btn-back {
+    padding: 8px 16px;
+    background-color: #f5f5f5;
+    color: #525c69;
+    border: 1px solid #c6cdd3;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-back:hover {
+    background-color: #e6e6e6;
+}
+
+.btn-delete {
+    padding: 5px 10px;
+    background-color: #ff5252;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 12px;
+}
+
+.btn-delete:hover {
+    background-color: #ff0000;
+}
+
+.table-container {
+    margin-top: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eef2f4;
+}
+
+th {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #c6cdd3;
+    border-radius: 3px;
+    transition: border 0.2s;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #bbed21;
+}
+
+input[readonly] {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.settings-footer {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 1000;
+}
+
+.notification.success {
+    background-color: #d7f9e5;
+    color: #0b8043;
+    border-left: 4px solid #0b8043;
+}
+
+.notification.error {
+    background-color: #ffe8e8;
+    color: #d0021b;
+    border-left: 4px solid #d0021b;
+}
+
+.notification.info {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-left: 4px solid #1976d2;
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 768px) {
+    .tabs {
+        flex-direction: column;
+    }
+    
+    .tab {
+        margin-bottom: 5px;
+    }
+    
+    .settings-actions {
+        flex-direction: column;
+    }
+    
+    .btn-action, .btn-save {
+        margin-bottom: 10px;
+    }
+}

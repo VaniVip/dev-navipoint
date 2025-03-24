@@ -2,79 +2,10 @@
  * Приложение для заполнения счетов Bitrix24
  */
 
-// Справочники и константы
-const docTypesEnum = {
-    "759": "ССТРТС",
-    "761": "ДСТРТС",
-    "763": "ОТКОС",
-    "765": "СТ 1 / СТ",
-    "767": "СГР",
-    "769": "ДСС",
-    "771": "ДС ГОСТ Р",
-    "773": "ПИ",
-    "775": "ИК",
-    "777": "Сертификат происхождения",
-    "779": "СТО",
-    "781": "ТУ",
-    "783": "ISO",
-    "1093": "Сертификат типа",
-    "1045": "Экономический паспорт деятельности",
-    "1095": "Паспорт",
-    "785": "РУ",
-    "787": "Тех. док. (МИ)",
-    "789": "ПИ (МИ)",
-    "791": "ВИРД",
-    "1099": "Отрицательное Решение",
-    "1109": "Штрих коды",
-    "1117": "Переводы (МИ)",
-    "1133": "Сроки годности",
-    "1137": "Дополнение к техническому протоколу",
-    "1141": "ЭЗ",
-    "1143": "Паспорт безопасности",
-    "1433": "Нотификация",
-    "1145": "Инструкция МИ",
-    "1149": "Заключение ФСТЭК",
-    "1381": "Письмо РЗН",
-    "1473": "Международные переводы",
-    "1491": "ОБ"
-};
-
-const tagsEnum = {
-    "883": "004",
-    "885": "020",
-    "887": "010",
-    "889": "037",
-    "1155": "012",
-    "891": "005",
-    "893": "007",
-    "895": "008",
-    "897": "009",
-    "899": "015",
-    "901": "016",
-    "971": "017",
-    "903": "019",
-    "905": "021",
-    "907": "023",
-    "909": "024",
-    "911": "025",
-    "913": "030",
-    "915": "031",
-    "917": "032",
-    "919": "033",
-    "921": "034",
-    "923": "040",
-    "925": "044",
-    "927": "РУ",
-    "929": "2425",
-    "933": "Грин Лайн",
-    "973": "051",
-    "977": "018",
-    "1053": "Иное",
-    "1349": "СГР",
-    "1421": "Добровольная сертификация",
-    "1469": "001",
-    "1487": "Честный знак"
-};
+// Справочники и константы (будут загружены из настроек)
+let docTypesEnum = {};
+let tagsEnum = {};
+let docTypeReplacements = {};
 
 // Словарь названий стадий
 const stageNamesMap = {
@@ -120,9 +51,192 @@ const app = {
         BX24.ready(function () {
             BX24.init(function () {
                 console.log("BX24 готов!");
-                app.loadInvoiceData();
+                
+                // Загрузка справочников из настроек
+                app.loadSettings().then(() => {
+                    app.loadInvoiceData();
+                });
             });
         });
+    },
+    
+    /**
+     * Загрузка настроек из хранилища Bitrix24
+     */
+    loadSettings: function() {
+        return new Promise((resolve, reject) => {
+            console.log("Загрузка настроек...");
+            
+            BX24.callMethod('app.option.get', {}, result => {
+                if (result.error()) {
+                    console.error("Ошибка загрузки настроек:", result.error());
+                    // Используем значения по умолчанию
+                    this.loadDefaultSettings();
+                    resolve();
+                    return;
+                }
+                
+                const options = result.data();
+                console.log("Загруженные настройки:", options);
+                
+                // Загружаем типы документов
+                if (options.docTypesEnum) {
+                    try {
+                        docTypesEnum = JSON.parse(options.docTypesEnum);
+                        console.log("Загруженные типы документов:", docTypesEnum);
+                    } catch (e) {
+                        console.error("Ошибка парсинга типов документов:", e);
+                        // Используем значения по умолчанию
+                        this.loadDefaultDocTypesEnum();
+                    }
+                } else {
+                    // Если настройки не найдены, загружаем значения по умолчанию
+                    this.loadDefaultDocTypesEnum();
+                }
+                
+                // Загружаем замены для типов документов
+                if (options.docTypeReplacements) {
+                    try {
+                        docTypeReplacements = JSON.parse(options.docTypeReplacements);
+                        console.log("Загруженные замены типов документов:", docTypeReplacements);
+                    } catch (e) {
+                        console.error("Ошибка парсинга замен типов документов:", e);
+                        // Используем значения по умолчанию
+                        this.loadDefaultDocTypeReplacements();
+                    }
+                } else {
+                    // Если настройки не найдены, загружаем значения по умолчанию
+                    this.loadDefaultDocTypeReplacements();
+                }
+                
+                // Загружаем теги
+                if (options.tagsEnum) {
+                    try {
+                        tagsEnum = JSON.parse(options.tagsEnum);
+                        console.log("Загруженные теги:", tagsEnum);
+                    } catch (e) {
+                        console.error("Ошибка парсинга тегов:", e);
+                        // Используем значения по умолчанию
+                        this.loadDefaultTagsEnum();
+                    }
+                } else {
+                    // Если настройки не найдены, загружаем значения по умолчанию
+                    this.loadDefaultTagsEnum();
+                }
+                
+                console.log("Итоговые настройки после загрузки:");
+                console.log("docTypesEnum:", docTypesEnum);
+                console.log("tagsEnum:", tagsEnum);
+                console.log("docTypeReplacements:", docTypeReplacements);
+                
+                resolve();
+            });
+        });
+    },
+    
+    /**
+     * Загрузка значений по умолчанию
+     */
+    loadDefaultSettings: function() {
+        this.loadDefaultDocTypesEnum();
+        this.loadDefaultTagsEnum();
+        this.loadDefaultDocTypeReplacements();
+    },
+    
+    /**
+     * Загрузка типов документов по умолчанию
+     */
+    loadDefaultDocTypesEnum: function() {
+        docTypesEnum = {
+            "759": "ССТРТС",
+            "761": "ДСТРТС",
+            "763": "ОТКОС",
+            "765": "СТ 1 / СТ",
+            "767": "СГР",
+            "769": "ДСС",
+            "771": "ДС ГОСТ Р",
+            "773": "ПИ",
+            "775": "ИК",
+            "777": "Сертификат происхождения",
+            "779": "СТО",
+            "781": "ТУ",
+            "783": "ISO",
+            "1093": "Сертификат типа",
+            "1045": "Экономический паспорт деятельности",
+            "1095": "Паспорт",
+            "785": "РУ",
+            "787": "Тех. док. (МИ)",
+            "789": "ПИ (МИ)",
+            "791": "ВИРД",
+            "1099": "Отрицательное Решение",
+            "1109": "Штрих коды",
+            "1117": "Переводы (МИ)",
+            "1133": "Сроки годности",
+            "1137": "Дополнение к техническому протоколу",
+            "1141": "ЭЗ",
+            "1143": "Паспорт безопасности",
+            "1433": "Нотификация",
+            "1145": "Инструкция МИ",
+            "1149": "Заключение ФСТЭК",
+            "1381": "Письмо РЗН",
+            "1473": "Международные переводы",
+            "1491": "ОБ"
+        };
+        console.log("Загружены типы документов по умолчанию:", docTypesEnum);
+    },
+    
+    /**
+     * Загрузка тегов по умолчанию
+     */
+    loadDefaultTagsEnum: function() {
+        tagsEnum = {
+            "883": "004",
+            "885": "020",
+            "887": "010",
+            "889": "037",
+            "1155": "012",
+            "891": "005",
+            "893": "007",
+            "895": "008",
+            "897": "009",
+            "899": "015",
+            "901": "016",
+            "971": "017",
+            "903": "019",
+            "905": "021",
+            "907": "023",
+            "909": "024",
+            "911": "025",
+            "913": "030",
+            "915": "031",
+            "917": "032",
+            "919": "033",
+            "921": "034",
+            "923": "040",
+            "925": "044",
+            "927": "РУ",
+            "929": "2425",
+            "933": "Грин Лайн",
+            "973": "051",
+            "977": "018",
+            "1053": "Иное",
+            "1349": "СГР",
+            "1421": "Добровольная сертификация",
+            "1469": "001",
+            "1487": "Честный знак"
+        };
+        console.log("Загружены теги по умолчанию:", tagsEnum);
+    },
+    
+    /**
+     * Загрузка замен типов документов по умолчанию
+     */
+    loadDefaultDocTypeReplacements: function() {
+        docTypeReplacements = {
+            "ПИ": "Протокол",
+            "ССТРТС": "Консультационные и сопроводительные услуги в области подтверждения соответствия"
+        };
+        console.log("Загружены замены типов документов по умолчанию:", docTypeReplacements);
     },
     
     /**
@@ -234,10 +348,60 @@ const app = {
     },
     
     /**
-     * Создает строку с названием услуги для счета
+     * Создает строку с названием услуги для счета с преобразованием
      */
     createServiceName: function(docTypes, tags, protocol) {
-        return [docTypes, tags, protocol].filter(value => value !== '—').join(', ');
+        console.log("=== Создание названия услуги для счета ===");
+        console.log("Исходное название типа документа:", docTypes);
+        
+        // Прямая проверка на ПИ и ССТРТС для гарантированной работы
+        if (docTypes === "ПИ") {
+            console.log("Точное совпадение с 'ПИ', заменяем на 'Протокол'");
+            docTypes = "Протокол";
+        } else if (docTypes.includes("ПИ")) {
+            console.log("Название содержит 'ПИ', заменяем на 'Протокол'");
+            docTypes = "Протокол";
+        } else if (docTypes === "ССТРТС") {
+            console.log("Точное совпадение с 'ССТРТС', заменяем на полное название услуги");
+            docTypes = "Консультационные и сопроводительные услуги в области подтверждения соответствия";
+        } else if (docTypes.includes("ССТРТС")) {
+            console.log("Название содержит 'ССТРТС', заменяем на полное название услуги");
+            docTypes = "Консультационные и сопроводительные услуги в области подтверждения соответствия";
+        } else {
+            // Пробуем использовать словарь замен
+            let replaced = false;
+            
+            // Проверяем точные совпадения
+            if (docTypeReplacements[docTypes]) {
+                docTypes = docTypeReplacements[docTypes];
+                console.log("Найдено точное соответствие в словаре замен, новое значение:", docTypes);
+                replaced = true;
+            }
+            
+            // Если точного совпадения нет, ищем частичные
+            if (!replaced) {
+                for (const [original, replacement] of Object.entries(docTypeReplacements)) {
+                    if (docTypes.includes(original)) {
+                        docTypes = replacement;
+                        console.log("Найдено частичное соответствие для", original, "в словаре замен, новое значение:", docTypes);
+                        replaced = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!replaced) {
+                console.log("Замены не найдены, оставляем исходное значение:", docTypes);
+            }
+        }
+        
+        console.log("Итоговое название типа документа после всех проверок:", docTypes);
+        
+        // Формируем полное название услуги
+        const serviceName = [docTypes, tags, protocol].filter(value => value !== '—').join(', ');
+        console.log("Окончательное название услуги:", serviceName);
+        
+        return serviceName;
     },
     
     /**
@@ -296,15 +460,19 @@ const app = {
 
                 // Вид документа
                 const docTypes = app.formatEnumValues(docTypesField, docTypesEnum);
+                console.log(`Элемент ${item.id}: Вид документа:`, docTypes);
 
                 // Теги
                 const tags = app.formatEnumValues(tagsField, tagsEnum);
+                console.log(`Элемент ${item.id}: Теги:`, tags);
 
                 // № Протокола
                 const protocol = protocolField || '—';
+                console.log(`Элемент ${item.id}: Протокол:`, protocol);
                 
                 // Формируем название услуги для счета
                 const serviceName = app.createServiceName(docTypes, tags, protocol);
+                console.log(`Элемент ${item.id}: Итоговое название услуги:`, serviceName);
 
                 // Получаем имя ответственного
                 BX24.callMethod('user.get', {
@@ -371,6 +539,7 @@ const app = {
                 }
                 
                 const productName = inputField.value.trim();
+                console.log(`Название услуги для элемента ${itemId}:`, productName);
                 
                 // Получаем цену из данных
                 return new Promise((resolve, reject) => {
