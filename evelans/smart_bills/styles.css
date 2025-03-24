@@ -1,0 +1,177 @@
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    font-size: 18px;
+    font-weight: normal;
+    margin: 10px 0;
+    padding: 10px;
+    color: #000;
+}
+
+.btn-fill-invoice {
+    margin-top: 15px;
+    padding: 8px 12px;
+    background-color: #bbed21;
+    color: #525c69;
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: bold;
+}
+
+.btn-fill-invoice:hover {
+    background-color: #d2f95f;
+}
+
+.checkbox-column {
+    width: 30px;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+th, td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #eef2f4;
+    color: #525c69;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: normal;
+    color: #6a737f;
+    border-top: 1px solid #eef2f4;
+    position: relative;
+}
+
+tr:hover {
+    background-color: #f6f8f9;
+}
+
+.filter-panel {
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: #fff;
+    border: 1px solid #eef2f4;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #525c69;
+}
+
+.checkbox-label input {
+    margin-right: 8px;
+}
+
+.error-message {
+    padding: 12px;
+    margin: 10px 0;
+    background-color: #ffe8e8;
+    border-radius: 3px;
+    color: #d0021b;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #6a737f;
+}
+
+.editable-field {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 1px solid #c6cdd3;
+    border-radius: 3px;
+    min-height: 36px;
+    color: #525c69;
+    font-size: 14px;
+    transition: border 0.2s;
+}
+
+.editable-field:focus {
+    outline: none;
+    border-color: #bbed21;
+}
+
+a {
+    color: #2067b0;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #1d5da8;
+}
+
+/* Настройка ширины столбцов */
+.col-process-name {
+    width: 20%;
+}
+
+.col-responsible {
+    width: 15%;
+}
+
+.col-sum {
+    width: 10%;
+}
+
+.col-service-name {
+    width: 55%;
+}
+
+/* Стили для чекбоксов в стиле Bitrix24 */
+input[type="checkbox"] {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    border: 1px solid #c6cdd3;
+    border-radius: 2px;
+    cursor: pointer;
+    outline: none;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #bbed21;
+    border-color: #bbed21;
+}
+
+input[type="checkbox"]:checked:after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
